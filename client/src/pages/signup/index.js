@@ -14,7 +14,7 @@ import Container from '@mui/material/Container'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { AlertMessage, FormInputText, Layout, Toast } from '../../components'
 import { useApi } from '../../hooks/useApi'
-import { Endpoints } from '../../config/Endpoints'
+import { Endpoints } from '../../config/endpoints'
 import { useForm } from 'react-hook-form'
 
 import LoadingButton from '@mui/lab/LoadingButton'

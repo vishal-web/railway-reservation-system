@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import axios from 'axios'
+import { axiosInstance } from '../config/axios'
 
 export const useApi = () => {
   const [loading, setLoading] = useState(false)
 
   const getApi = (url, params = {}) => {
     setLoading(true)
-    return axios
+    return axiosInstance
       .get(url, { params })
       .then(({ data }) => {
         return data
@@ -19,7 +19,7 @@ export const useApi = () => {
 
   const postApi = (url, params = {}) => {
     setLoading(true)
-    return axios
+    return axiosInstance
       .post(url, params)
       .then(({ data }) => {
         return data
@@ -32,7 +32,7 @@ export const useApi = () => {
 
   const putApi = (url, params = {}) => {
     setLoading(true)
-    return axios
+    return axiosInstance
       .put(url, { params })
       .then(({ data }) => {
         return data
@@ -45,7 +45,7 @@ export const useApi = () => {
 
   const deleteApi = (url, params = {}) => {
     setLoading(true)
-    return axios
+    return axiosInstance
       .delete(url, { params })
       .then(({ data }) => {
         return data
