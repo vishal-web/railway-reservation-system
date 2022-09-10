@@ -1,4 +1,4 @@
 [build]
   base    = "client/"
   publish = "build/"
-  command = "echo 'default context'"
+  command = "npm run build"
