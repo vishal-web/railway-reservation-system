@@ -14,6 +14,8 @@ import {
 } from '@mui/material'
 
 import { Adb as AdbIcon, Menu as MenuIcon } from '@mui/icons-material'
+import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 
 const pages = ['Products', 'Pricing', 'Blog']
 
@@ -21,6 +23,11 @@ const TopbarPages = [
   { url: '/book-tickets', name: 'Book Tickets' },
   { url: '/pnr-status', name: 'PNR Staus' },
   { url: '/transaction-history', name: 'Transaction History' }
+]
+
+const AuthPages = [
+  { url: '/login', name: 'Login' },
+  { url: '/signup', name: 'SignUp' }
 ]
 
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
@@ -42,6 +49,17 @@ export const Topbar = () => {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null)
+  }
+
+  const { isUserLoggedIn = false, user: userInfo = {} } = useSelector(
+    (state) => state?.auth ?? {}
+  )
+
+  const handleClickSetting = (setting) => {
+    if (setting === 'Logout') {
+      localStorage.removeItem('token')
+      window.location.reload()
+    }
   }
 
   return (
@@ -133,7 +151,9 @@ export const Topbar = () => {
           >
             {TopbarPages.map((page) => (
               <Button
+                component={Link}
                 key={page.name}
+                to={page.url}
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
@@ -162,40 +182,71 @@ export const Topbar = () => {
               }}
             >
               {TopbarPages.map((page) => (
-                <MenuItem key={page.name} onClick={handleCloseNavMenu}>
+                <MenuItem component={Link} to={page.url} key={page.name}>
                   <Typography textAlign="center">{page.name}</Typography>
                 </MenuItem>
               ))}
             </Menu>
 
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
+            {!isUserLoggedIn && (
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  display: { xs: 'none', md: 'flex' }
+                }}
+              >
+                {AuthPages.map((page) => (
+                  <Button
+                    component={Link}
+                    key={page.name}
+                    to={page.url}
+                    onClick={handleCloseNavMenu}
+                    sx={{ my: 2, color: 'white', display: 'block' }}
+                  >
+                    {page.name}
+                  </Button>
+                ))}
+              </Box>
+            )}
 
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right'
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right'
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
+            {isUserLoggedIn && (
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar
+                    alt="Remy Sharp"
+                    src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+                  />
+                </IconButton>
+              </Tooltip>
+            )}
+
+            {isUserLoggedIn && (
+              <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                {settings.map((setting) => (
+                  <MenuItem
+                    key={setting}
+                    onClick={() => handleClickSetting(setting)}
+                  >
+                    <Typography textAlign="center">{setting}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            )}
           </Box>
         </Toolbar>
       </Container>

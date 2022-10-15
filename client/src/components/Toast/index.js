@@ -7,7 +7,7 @@ export const Toast = ({
   message = 'This is a success alert — check it out!',
   onClose = () => {},
   severity = 'success',
-  variant = '',
+  variant = 'filled',
   color = '',
   title = '',
   open = '',
@@ -17,12 +17,18 @@ export const Toast = ({
   return (
     <Snackbar
       open={open}
-      severity={severity}
-      variant={variant}
-      message={message}
       autoHideDuration={6000}
       onClose={onClose}
       anchorOrigin={{ vertical, horizontal }}
-    />
+    >
+      <Alert
+        onClose={onClose}
+        severity={severity}
+        variant={variant}
+        sx={{ width: '100%' }}
+      >
+        {message}
+      </Alert>
+    </Snackbar>
   )
 }

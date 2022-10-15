@@ -1,13 +1,17 @@
-import React from 'react'
-import logo from './logo.svg'
-import { Counter } from './features/counter/Counter'
+import React, { useEffect } from 'react'
 import './App.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Routes as Pages } from './routes/index'
-
-console.log({ Pages })
+import { useApi } from './hooks/useApi'
 
 const App = () => {
+  const { getApi } = useApi()
+
+  useEffect(() => {
+    getApi('/ping').then().catch()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <BrowserRouter>
       <Routes>

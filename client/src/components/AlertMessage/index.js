@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack'
 // severity = success | warning | info | success
 
 export const AlertMessage = ({
-  message = 'This is a success alert — check it out!',
+  message = '',
   onClose = () => {},
   severity = 'success',
   variant = '',
@@ -20,7 +20,6 @@ export const AlertMessage = ({
       <Alert
         severity={severity}
         variant={variant}
-        color={color}
         onClose={onClose}
         open={open}
       >

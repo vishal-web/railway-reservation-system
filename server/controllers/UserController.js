@@ -12,10 +12,14 @@ const fetchAllUser = asyncHandler(async (req, res, next) => {
 
 const fetchUser = asyncHandler(async (req, res, next) => {
   const {
-    params: { userId },
+    params: { userId, deleteAllUser = 0 },
   } = req;
 
-  const singleUser = UserModel.find(userId);
+  if (deleteAllUser) {
+    await UserModel.deleteMany({});
+  }
+
+  const singleUser = await UserModel.findById(userId);
 
   res.status(200).json({
     status: true,

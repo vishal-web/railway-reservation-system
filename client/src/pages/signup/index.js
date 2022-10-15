@@ -51,9 +51,12 @@ export const SignUp = () => {
     message: ''
   })
 
-  const [showAlert, setAlert] = React.useState(false)
+  const [showAlert, setAlert] = React.useState({
+    open: false,
+    message: ''
+  })
 
-  const { handleSubmit, reset, watch, control, register, errors } = useForm({
+  const { handleSubmit, reset, control } = useForm({
     defaultValues
   })
 
@@ -62,11 +65,21 @@ export const SignUp = () => {
       ...data
     })
       .then((resp) => {
-        setAlert(true)
+        setAlert({
+          open: true,
+          severity: 'success',
+          message: 'You have been successfully registered'
+        })
         reset(defaultValues)
       })
       .catch((error) => {
-        setAlert(false)
+        const errorMsg = error?.response?.data?.error || 'Something went wrong.'
+
+        setAlert({
+          open: true,
+          severity: 'error',
+          message: errorMsg
+        })
       })
   }
 
@@ -85,10 +98,11 @@ export const SignUp = () => {
             }}
           >
             <AlertMessage
-              message="You have been successfully registered"
+              message={showAlert?.message}
               variant="filled"
-              open={showAlert}
-              onClose={() => setAlert(false)}
+              open={showAlert?.open}
+              severity={showAlert?.severity}
+              onClose={() => setAlert({})}
             />
 
             <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
@@ -129,7 +143,6 @@ export const SignUp = () => {
                       required: true
                     }}
                     inputAttr={{
-                      autoFocus: true,
                       fullWidth: true,
                       id: 'lastName',
                       autoComplete: 'family-name'
@@ -145,6 +158,7 @@ export const SignUp = () => {
                       required: true
                     }}
                     inputAttr={{
+                      type: 'email',
                       fullWidth: true,
                       id: 'email',
                       autoComplete: 'email'
@@ -177,18 +191,9 @@ export const SignUp = () => {
                   />
                 </Grid>
               </Grid>
-              {/* <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Sign Up
-              </Button> */}
               <LoadingButton
                 color="secondary"
                 loading={loading}
-                // loadingPosition="start"
                 variant="contained"
                 type="submit"
                 fullWidth

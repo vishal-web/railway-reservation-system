@@ -12,7 +12,12 @@ import Grid from '@mui/material/Grid'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Typography from '@mui/material/Typography'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
-import { Layout, Topbar } from '../../components'
+import { AlertMessage, FormInputText, Layout, Topbar } from '../../components'
+import { useForm } from 'react-hook-form'
+import { Endpoints } from '../../config/endpoint'
+import { useApi } from '../../hooks/useApi'
+import LoadingButton from '@mui/lab/LoadingButton'
+import { useNavigate } from 'react-router-dom'
 
 function Copyright(props) {
   return (
@@ -34,20 +39,61 @@ function Copyright(props) {
 
 const theme = createTheme()
 
+const defaultValues = {
+  email: '',
+  password: ''
+}
+
 export const Login = () => {
-  const handleSubmit = (event) => {
-    event.preventDefault()
-    const data = new FormData(event.currentTarget)
-    console.log({
-      email: data.get('email'),
-      password: data.get('password')
+  const { postApi, loading } = useApi()
+
+  const navigate = useNavigate()
+
+  const [showAlert, setAlert] = React.useState({
+    open: false,
+    message: ''
+  })
+
+  const onSubmit = (data) => {
+    postApi(Endpoints.LOGIN, {
+      ...data
     })
+      .then((resp) => {
+        if (resp?.token) {
+          reset(defaultValues)
+          setAlert({})
+          localStorage.setItem('token', resp.token)
+          navigate('/')
+        } else {
+          setAlert({
+            open: true,
+            severity: 'error',
+            message: resp?.message
+          })
+        }
+      })
+      .catch((error) => {
+        const errorMsg =
+          error?.response?.data?.error ||
+          error?.response?.data?.message ||
+          'Something went wrong.'
+
+        setAlert({
+          open: true,
+          severity: 'error',
+          message: errorMsg
+        })
+      })
   }
 
-  const random = 'https://source.unsplash.com/random'
+  const { handleSubmit, reset, control } = useForm({
+    defaultValues
+  })
+
+  // const random = 'https://source.unsplash.com/random'
 
   return (
-    <Layout handleSubmit={handleSubmit}>
+    <Layout>
       <Box
         sx={{
           my: 8,
@@ -57,45 +103,69 @@ export const Login = () => {
           alignItems: 'center'
         }}
       >
+        <AlertMessage
+          message={showAlert?.message}
+          variant="filled"
+          open={showAlert?.open}
+          severity={showAlert?.severity}
+          onClose={() => setAlert({})}
+        />
+
         <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
+          <FormInputText
+            control={control}
             name="email"
-            autoComplete="email"
-            autoFocus
+            rules={{
+              required: true
+            }}
+            label="Email Address"
+            inputAttr={{
+              margin: 'normal',
+              autoFocus: true,
+              fullWidth: true,
+              id: 'email',
+              autoComplete: 'given-name'
+            }}
           />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
+
+          <FormInputText
+            control={control}
             name="password"
+            rules={{
+              required: true
+            }}
             label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
+            inputAttr={{
+              margin: 'normal',
+              fullWidth: true,
+              id: 'password',
+              autoComplete: 'current-password',
+              type: 'password'
+            }}
           />
+
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           />
-          <Button
+
+          <LoadingButton
+            color="secondary"
+            loading={loading}
+            variant="contained"
             type="submit"
             fullWidth
-            variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
             Sign In
-          </Button>
+          </LoadingButton>
+
           <Grid container>
             <Grid item xs>
               <Link href="#" variant="body2">
