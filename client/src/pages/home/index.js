@@ -24,6 +24,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { getAllStations } from '../../data/data'
 import { fetchLoggedInUser } from '../../features/auth/authApi'
+import { createSearchParams, useNavigate } from 'react-router-dom'
 
 const picture =
   'https://images.unsplash.com/photo-1474487548417-781cb71495f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1584&q=80'
@@ -66,9 +67,27 @@ export const Home = () => {
     defaultValues
   })
 
+  const navigate = useNavigate()
+
   const onSubmit = (data) => {
+    const { from: fromStation = {}, to: toStation = {}, ...rest } = data
+
+    if (fromStation?.value === toStation?.value) {
+      return alert('Boarding & Destination station can not be the same.')
+    }
+
     setLoading(true)
-    setTimeout(() => setLoading(false), 5000)
+    setTimeout(() => {
+      setLoading(false)
+      navigate({
+        pathname: 'search-train',
+        search: createSearchParams({
+          from: fromStation.value,
+          to: toStation.value,
+          ...rest
+        }).toString()
+      })
+    }, 1000)
   }
 
   const { errorMessage = '' } = useSelector((state) => state?.auth ?? {})

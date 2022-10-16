@@ -19,15 +19,15 @@ export const FormInputAutocomplete = ({
         fieldState: { error }
       }) => (
         <Autocomplete
-          id="controlled-demo"
+          id={`controlled-demo-${name}`}
           {...defaultProps}
+          value={typeof value === 'string' ? value : value || null}
           isOptionEqualToValue={(option, value) => option.value === value.value}
           fullWidth
           onChange={(_, data) => onChange(data)}
           renderInput={(params) => (
             <TextField
               {...params}
-              {...field}
               error={!!error}
               fullWidth
               inputRef={ref}
